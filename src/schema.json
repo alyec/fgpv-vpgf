@@ -4,7 +4,7 @@
     "type": "object",
     "version": 2.0,
     "comments": "FIXME: when draft 05 is release redo schema inheritance with patching / merging if they are accepted",
-    "additionalProperties": true,
+    "additionalProperties": false,
 
     "definitions": {
         "spatialReference": {
@@ -521,6 +521,11 @@
                 "logoUrl": { "type": "string", "description": "An optional image to be used in the place of the default viewer logo" },
                 "navBar": { "$ref": "#/definitions/navBarNode" },
                 "sideMenu": { "$ref": "#/definitions/sideMenuNode" },
+                "restrictNavigation": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Will restrict the user from panning beyond the maximum extent."
+                },
                 "legendIsOpen": {
                     "type": "object",
                     "description": "Specifies whether the legend is opened by default on initial loading of the map for small, medium, and large viewports",
@@ -533,7 +538,6 @@
                 },
                 "widgetsWidget": { "type": "object", "additionalProperties": true, "description": "FIXME" }
             }
-
         },
 
         "services": {
@@ -591,18 +595,6 @@
             }
         },
 
-
-         "legendIsOpen": {
-            "type": "object",
-            "description": "Specifies whether the legend is opened by default on initial loading of the map for small, medium, and large viewports",
-            "properties": {
-                "large": { "type": "boolean", "default": false, "description": "Whether the legend is opened by default on initial loading of the map for large viewports" },
-                "medium": { "type": "boolean", "default": false, "description": "Whether the legend is opened by default on initial loading of the map for medium viewports" },
-                "small": { "type": "boolean", "default": false, "description": "Whether the legend is opened by default on initial loading of the map for small viewports" }
-            },
-            "additionalProperties": false
-        },
-
         "map": {
             "type": "object",
             "description": "Core map properties (extent sets, levels of detail)",
@@ -624,11 +616,6 @@
                 "initialBasemapId": {
                     "type": "string",
                     "description": "Initial basemap to load. If not supplied viewer will select any basemap."
-                },
-                "restrictNavigation": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Will restrict the user from panning beyond the maximum extent."
                 },
                 "baseMaps": {
                     "type": "array",
