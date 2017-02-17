@@ -74,6 +74,9 @@
                 return;
             }
 
+            // TODO: detaching ui from layer causes lots of errors in this function; disabling for now
+            return true;
+            /*
             return geoService.legend
                 .walkItems(item =>
                     (item.expanded), true) // leaf entries will return "undefined"
@@ -81,6 +84,7 @@
                     (typeof item !== 'undefined')) // filter out leaf entries
                 .every(item =>
                     (item === value));
+            */
         }
     }
 })();

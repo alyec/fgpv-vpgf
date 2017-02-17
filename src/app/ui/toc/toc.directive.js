@@ -258,6 +258,8 @@
         self.config = tocService.data;
         self.presets = tocService.presets;
 
+        self.secondToc = tocService.secondToc;
+
         // reorder mode is off by default
         self.isReorder = false;
 

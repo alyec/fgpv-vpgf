@@ -180,7 +180,8 @@ module.exports = function () {
         { file: 'content/images/iconsets/image-icons.svg', prefix: 'image', icons: 'tune photo'.split(' ') },
         { file: 'content/images/iconsets/maps-icons.svg', prefix: 'maps', icons: 'place layers my_location map layers_clear'.split(' ') },
         { file: 'content/images/iconsets/navigation-icons.svg', prefix: 'navigation', icons: 'menu check more_vert close more_horiz refresh arrow_back fullscreen'.split(' ') },
-        { file: 'content/images/iconsets/social-icons.svg', prefix: 'social', icons: 'person share'.split(' ') }
+        { file: 'content/images/iconsets/social-icons.svg', prefix: 'social', icons: 'person share'.split(' ') },
+        { file: 'content/images/iconsets/toggle-icons.svg', prefix: 'toggle', icons: 'radio_button_checked radio_button_unchecked check_box check_box_outline_blank'.split(' ') }
     ];
     // jscs:enable maximumLineLength
     config.svgSources = config.svgCache + '/*.svg';

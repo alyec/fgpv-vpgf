@@ -71,11 +71,15 @@
                 return;
             }
 
+            // TODO: detaching ui from layer causes lots of errors in this function; disabling for now
+            return true;
+            /*
             return geoService.legend
                 .walkItems(item =>
                     (item.getVisibility()), true)
                 .every(item =>
                     (item === value));
+            */
         }
     }
 })();
