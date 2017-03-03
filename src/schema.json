@@ -349,7 +349,9 @@
                 "catalogueUrl": { "type": "string", "default": null, "description": "The catalogue url of the layer service" },
                 "layerType": { "type": "string", "enum": [ "esriImage", "esriTile" ] },
                 "extent": { "$ref": "#/definitions/extentWithReferenceNode" },
-                "controls": { "$ref": "#/definitions/legendEntryControls" }
+                "controls": { "$ref": "#/definitions/legendEntryControls" },
+                "disabledControls": { "$ref": "#/definitions/legendEntryControls", "description": "A list of controls which are visible, but disabled for user modification" },
+                "state": { "$ref": "#/definitions/initialLayerSettings" }
             },
             "required": [ "id", "layerType", "url" ],
             "additionalProperties": false
@@ -366,7 +368,9 @@
                 "layerType": { "type": "string", "enum": [ "esriFeature" ] },
                 "tolerance": { "type": "number", "default": 5, "description": "Specifies the tolerance in pixels when determining if a feature was clicked. Should be non-negative integer" },
                 "extent": { "$ref": "#/definitions/extentWithReferenceNode" },
-                "controls": { "$ref": "#/definitions/legendEntryControls" }
+                "controls": { "$ref": "#/definitions/legendEntryControls" },
+                "disabledControls": { "$ref": "#/definitions/legendEntryControls", "description": "A list of controls which are visible, but disabled for user modification" },
+                "state": { "$ref": "#/definitions/initialLayerSettings" }
             },
             "required": [ "id", "layerType", "url" ],
             "additionalProperties": false
@@ -388,7 +392,9 @@
                 "featureInfoMimeType": { "type": "string", "enum": [ "text/html;fgpv=summary", "text/html", "text/plain", "application/json" ], "description": "If specified indicates that GetFeatureInfo should be enabled for this WMS and indicates the format that should be requested." },
                 "legendMimeType": { "type": "string", "enum": [ "image/png", "image/gif", "image/jpeg", "image/svg", "image/svg+xml" ], "description": "If specified indicates that GetLegendGraphic should be enabled for this WMS and indicates the format that should be requested.  FIXME check legendUrl for additional requirements" },
                 "extent": { "$ref": "#/definitions/extentWithReferenceNode" },
-                "controls": { "$ref": "#/definitions/legendEntryControls" }
+                "controls": { "$ref": "#/definitions/legendEntryControls" },
+                "disabledControls": { "$ref": "#/definitions/legendEntryControls", "description": "A list of controls which are visible, but disabled for user modification" },
+                "state": { "$ref": "#/definitions/initialLayerSettings" }
             },
             "required": [ "id", "layerType", "layerEntries", "url" ],
             "additionalProperties": false
@@ -415,7 +421,9 @@
                 },
                 "tolerance": { "type": "number", "default": 5, "description": "Specifies the tolerance in pixels when determining if a feature was clicked. Should be non-negative integer" },
                 "extent": { "$ref": "#/definitions/extentWithReferenceNode" },
-                "controls": { "$ref": "#/definitions/legendEntryControls" }
+                "controls": { "$ref": "#/definitions/legendEntryControls" },
+                "disabledControls": { "$ref": "#/definitions/legendEntryControls", "description": "A list of controls which are visible, but disabled for user modification" },
+                "state": { "$ref": "#/definitions/initialLayerSettings" }
             },
             "required": [ "id", "layerType", "layerEntries", "url" ],
             "additionalProperties": false
