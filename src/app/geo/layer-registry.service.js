@@ -18,7 +18,37 @@
         .module('app.geo')
         .factory('layerRegistry', layerRegistryFactory);
 
-    function layerRegistryFactory($q, $timeout, $translate, gapiService, legendService, tooltipService, Geo) {
+    function layerRegistryFactory() {
+
+        return (geoState, config) => layerRegistry(geoState, config);
+
+        /***/
+
+        function layerRegistry() {
+
+            /*const ref = {
+
+            };*/
+
+            const service = {
+                constructLayers: () => {}, // TODO: remove crutch
+
+                createLayerRecord
+            };
+
+            /***/
+
+            function createLayerRecord() {
+
+            }
+
+            return service;
+        }
+    }
+
+    _layerRegistryFactory();
+
+    function _layerRegistryFactory($q, $timeout, $translate, gapiService, legendService, tooltipService, Geo) {
 
         return (geoState, config) => layerRegistry(geoState, geoState.mapService.mapObject, config);
 
@@ -668,7 +698,8 @@
              * @param {LayerRecord|LegendEntry} l the layer to be reloaded
              */
             function snapshotLayer(l) {
-                const configUpdate = cfg => cfg.options.snapshot.value = true;
+                const configUpdate = cfg =>
+                    cfg.options.snapshot.value = true;
                 reloadLayer(l, configUpdate);
             }
 

@@ -1,6 +1,19 @@
 (() => {
     'use strict';
 
+    const LEGEND = {
+        types: {
+            STRUCTURED: 'structured',
+            AUTOPOPULATE: 'autopopulate'
+        },
+        blockTypes: {
+            INFO: 'legendInfo',
+            NODE: 'legendNode',
+            GROUP: 'legendGroup',
+            SET: 'legendSet'
+        }
+    };
+
     /**
      * @module legendService
      * @memberof app.geo
@@ -14,7 +27,63 @@
         .module('app.geo')
         .factory('legendService', legendServiceFactory);
 
-    function legendServiceFactory($translate, $http, $q, $timeout, gapiService, Geo, legendEntryFactory) {
+    function legendServiceFactory(Geo) {
+
+        /*const ref = {
+
+        };*/
+
+        const service = {
+            legend: null, // : new LegendGroup()
+            contructLegend
+        };
+
+        return service;
+
+        /***/
+
+        function contructLegend(layerDefinitions, legendStructure) {
+            // since auto legend is a subset of structured legend, its children are automatically populated
+            if (legendStructure.type === LEGEND.types.AUTOPOPULATE) {
+                legendStructure.children = autopopulateLegend(layerDefinitions);
+            }
+
+            detectLegendBlockType();
+        }
+
+        /**
+         * Matches a LegendBlock type to the legend child object from the legend structure.
+         * @param {Object} legendChild legend child defintion object from the config
+         */
+        function detectLegendBlockType(legendChild, layerDefinitions) {
+            if (typeof legendChild.infoType !== 'undefined') {
+                return LEGEND.blockTypes.INFO;
+            } else if (typeof legendChild.exclusiveVisibility !== 'undefined') {
+                return LEGEND.blockTypes.SET;
+            } else if (typeof legendChild.children !== 'undefined') {
+                return LEGEND.blockTypes.GROUP;
+            } else {
+                const layerDefinition = layerDefinitions.find(ld =>
+                    ld.id === legendChild.layerId);
+
+                // dynamic layers render as LegendGroup blocks; all other layers are rendered as LegendNode blocks;
+                if (layerDefinition.layerType === Geo.Layer.Types.ESRI_DYNAMIC) {
+                    return LEGEND.blockTypes.GROUP;
+                }
+            }
+
+            return LEGEND.blockTypes.NODE;
+        }
+
+        function autopopulateLegend(layerDefinitions) {
+            return layerDefinitions.map(layerDefinition =>
+                ({ layerId: layerDefinition.id }));
+        }
+    }
+
+    _legendServiceFactory();
+
+    function _legendServiceFactory($translate, $http, $q, $timeout, gapiService, Geo, legendEntryFactory) {
 
         const legendSwitch = {
             structured: structuredLegendService,
