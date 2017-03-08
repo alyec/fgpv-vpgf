@@ -27,7 +27,7 @@
         .module('app.geo')
         .factory('legendService', legendServiceFactory);
 
-    function legendServiceFactory(Geo) {
+    function legendServiceFactory(Geo, LegendBlock) {
 
         /*const ref = {
 
@@ -43,6 +43,8 @@
         /***/
 
         function contructLegend(layerDefinitions, legendStructure) {
+            service.legend = LegendBlock.Group({}, 'I\'m root');
+
             // since auto legend is a subset of structured legend, its children are automatically populated
             if (legendStructure.type === LEGEND.types.AUTOPOPULATE) {
                 legendStructure.children = autopopulateLegend(layerDefinitions);

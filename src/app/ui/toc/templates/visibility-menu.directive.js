@@ -72,7 +72,7 @@
             }
 
             // TODO: detaching ui from layer causes lots of errors in this function; disabling for now
-            return true;
+            return value;
             /*
             return geoService.legend
                 .walkItems(item =>

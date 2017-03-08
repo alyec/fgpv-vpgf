@@ -14,9 +14,9 @@
         .module('app.ui.toc')
         .factory('tocService', tocService);
 
-    // jshint maxparams:13
+    // jshint maxparams:14
     function tocService($q, $rootScope, $mdToast, $translate, layoutService, stateManager,
-                        geoService, metadataService, errorService, debounceService, $timeout) {
+                        geoService, metadataService, errorService, debounceService, $timeout, LegendBlock) {
 
         const service = {
             // method called by the options and flags set on the layer item
@@ -194,225 +194,46 @@
             }
         };
 
-        /* -------- */
         let symbologySample;
 
         /* jshint ignore:start */
         // jscs:disable
         symbologySample = [{'name':'0', 'svgcode':'<svg id=\'SvgjsSvg1081\' width=\'32\' height=\'32\' xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' xmlns:xlink=\'http://www.w3.org/1999/xlink\' xmlns:svgjs=\'http://svgjs.com/svgjs\' viewBox=\'0 0 32 32\'><defs id=\'SvgjsDefs1082\'></defs><path id=\'SvgjsPath1083\' d=\'M19.5 16L16 12.5L12.5 16L16 19.5Z \' fill-opacity=\'1\' fill=\'#dcdcdc\' stroke-miterlimit=\'4\' stroke-linejoin=\'miter\' stroke-linecap=\'square\' stroke-opacity=\'1\' stroke=\'#828282\' stroke-width=\'1\' transform=\'matrix(1, 0, 0, 1, 0, 0)\'></path></svg>'}, {'name':'1', 'svgcode':'<svg id=\'SvgjsSvg1084\' width=\'32\' height=\'32\' xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' xmlns:xlink=\'http://www.w3.org/1999/xlink\' xmlns:svgjs=\'http://svgjs.com/svgjs\' viewBox=\'0 0 32 32\'><defs id=\'SvgjsDefs1085\'></defs><path id=\'SvgjsPath1086\' d=\'M20 16L16 12L12 16L16 20Z \' fill-opacity=\'1\' fill=\'#00617f\' stroke-miterlimit=\'4\' stroke-linejoin=\'miter\' stroke-linecap=\'square\' stroke-opacity=\'1\' stroke=\'#828282\' stroke-width=\'1\' transform=\'matrix(1, 0, 0, 1, 0, 0)\'></path></svg>'}, {'name':'2', 'svgcode':'<svg id=\'SvgjsSvg1087\' width=\'32\' height=\'32\' xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' xmlns:xlink=\'http://www.w3.org/1999/xlink\' xmlns:svgjs=\'http://svgjs.com/svgjs\' viewBox=\'0 0 32 32\'><defs id=\'SvgjsDefs1088\'></defs><path id=\'SvgjsPath1089\' d=\'M21 16L16 11L11 16L16 21Z \' fill-opacity=\'1\' fill=\'#24b24b\' stroke-miterlimit=\'4\' stroke-linejoin=\'miter\' stroke-linecap=\'square\' stroke-opacity=\'1\' stroke=\'#828282\' stroke-width=\'1\' transform=\'matrix(1, 0, 0, 1, 0, 0)\'></path></svg>'}, {'name':'3', 'svgcode':'<svg id=\'SvgjsSvg1090\' width=\'32\' height=\'32\' xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' xmlns:xlink=\'http://www.w3.org/1999/xlink\' xmlns:svgjs=\'http://svgjs.com/svgjs\' viewBox=\'0 0 32 32\'><defs id=\'SvgjsDefs1091\'></defs><path id=\'SvgjsPath1092\' d=\'M22 16L16 10L10 16L16 22Z \' fill-opacity=\'1\' fill=\'#ffc816\' stroke-miterlimit=\'4\' stroke-linejoin=\'miter\' stroke-linecap=\'square\' stroke-opacity=\'1\' stroke=\'#828282\' stroke-width=\'1\' transform=\'matrix(1, 0, 0, 1, 0, 0)\'></path></svg>'}, {'name':'4', 'svgcode':'<svg id=\'SvgjsSvg1093\' width=\'32\' height=\'32\' xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' xmlns:xlink=\'http://www.w3.org/1999/xlink\' xmlns:svgjs=\'http://svgjs.com/svgjs\' viewBox=\'0 0 32 32\'><defs id=\'SvgjsDefs1094\'></defs><path id=\'SvgjsPath1095\' d=\'M23 16L16 9L9 16L16 23Z \' fill-opacity=\'1\' fill=\'#c86800\' stroke-miterlimit=\'4\' stroke-linejoin=\'miter\' stroke-linecap=\'square\' stroke-opacity=\'1\' stroke=\'#828282\' stroke-width=\'1\' transform=\'matrix(1, 0, 0, 1, 0, 0)\'></path></svg>'}, {'name':'5', 'svgcode':'<svg id=\'SvgjsSvg1096\' width=\'32\' height=\'32\' xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' xmlns:xlink=\'http://www.w3.org/1999/xlink\' xmlns:svgjs=\'http://svgjs.com/svgjs\' viewBox=\'0 0 32 32\'><defs id=\'SvgjsDefs1097\'></defs><path id=\'SvgjsPath1098\' d=\'M25 16L16 7L7 16L16 25Z \' fill-opacity=\'1\' fill=\'#d4000b\' stroke-miterlimit=\'4\' stroke-linejoin=\'miter\' stroke-linecap=\'square\' stroke-opacity=\'1\' stroke=\'#828282\' stroke-width=\'1\' transform=\'matrix(1, 0, 0, 1, 0, 0)\'></path></svg>'}]; // jshint ignore:line
         /* jshint ignore:end */
-        // jscs:enable
 
-        // jscs:disable requireSpacesInAnonymousFunctionExpression
-        class LegendBlock {
-            constructor (layerProxy, id) {
-
-                this._id = id;
-
-                this._layerProxy = layerProxy;
-            }
-
-            // _id;
-            // _layerProxy;
-
-            get id () {
-                return this._id;
-            }
-
-            get layerProxy () {
-                return this._layerProxy;
-            }
-
-            get blockType () {
-                return this._blockType;
-            }
-
-            get template () {
-                return this._blockType;
-            }
-        }
-
-        class LegendInfo extends LegendBlock {
-            constructor(...args) {
-                super(...args);
-
-                this._blockType = 'info';
-            }
-        }
-
-        class LegendEntry extends LegendBlock {
-
-            constructor(...args) {
-                super(...args);
-            }
-
-            // _isSelected = false;
-
-            link (layerProxy) {
-                this._layerProxy = layerProxy;
-
-                // this._layerProxy.onLoad = this.onLoad();
-            }
-
-            // TODO: turn state names and template names to consts
-            get template () {
-                const stateToTemplate = {
-                    loading: () => 'placeholder',
-                    loaded: () => super.template,
-                    error: () => 'error'
-                };
-
-                return stateToTemplate[this._layerProxy.state]();
-            }
-        }
-
-        class LegendSet extends LegendEntry {
-            // cannot directly contain another legend set
-            constructor(...args) {
-                super(...args);
-
-                this._entries = [];
-                this._entryWatchers = [];
-                this._selectedEntry = null;
-                this._blockType = 'set';
-            }
-
-            get entries () { return this._entries;
-             }
-
-            addEntry (entry, position = this._entries.length) {
-                // TODO: consider using .includes; needs IE polyfill
-                if (['node', 'group'].indexOf(entry.blockType) === -1) {
-                    throw new Error(`Legend visibility sets cannot be nested.`);
-                }
-
-                if (this._entries.length === 0) {
-                    this._selectedEntry = entry;
-
-                    entry.layerProxy.setVisibility(true);
-                } else {
-                    entry.layerProxy.setVisibility(false);
-                }
-
-                // return a watch deregister function
-                const entryWatcher = $rootScope.$watch(() => entry.layerProxy.visibility, newValue => {
-                    if (newValue) {
-                        this._entries
-                            .filter(_entry => _entry !== entry)
-                            .forEach(_entry => _entry.layerProxy.setVisibility(false));
-                    }
-                });
-
-                this._entryWatchers.splice(position, 0, entryWatcher);
-                this._entries.splice(position, 0, entry);
-
-                return this;
-            }
-
-            removeEntry (entry) {
-                const index = this._entries.indexOf(entry);
-
-                if (index !== -1) {
-                    this._entries.splice(index, 1);
-
-                    // stop the watch and remove the watcher
-                    this._entryWatchers[index]();
-                    this._entryWatchers.splice(index, 1);
-                }
-
-                if (this._entries.length === 0) {
-                    this._selectedEntry = null;
-                }
-
-                return this;
-            }
-        }
-
-        class LegendNode extends LegendEntry {
-
-            constructor(...args) {
-                 super(...args);
-
-                 this._blockType = 'node';
-             }
-
-            get isSelected () { return this._isSelected; }
-
-            select () {
-                this._isSelected = true;
-
-                return this;
-            }
-
-            deselect () {
-                this._isSelected = false;
-
-                return this;
-            }
-
-            toggleSelection () {
-                this._isSelected = !this._isSelected;
-
-                return this;
-            }
-
-        }
-
-        // who is responsible for populating legend groups with entries? legend service or the legend group itself
-        class LegendGroup extends LegendEntry {
-
-             constructor(...args) {
-                 super(...args);
-
-                 this._entries = [];
-
-                 this._blockType = 'group';
-
-                 this._isExpanded = true;
-             }
-
-            // do we want to save this bit of ui (isExpanded) state in bookmark?
-            // _isExpanded = false;
-            // _entries = [];
-
-            get isExpanded () { return this._isExpanded; }
-
-            expand () {
-                this._isExpanded = true;
-
-                return this;
-            }
-
-            collapse () {
-                this._isExpanded = false;
-
-                return this;
-            }
-
-            toggleExpansion () {
-                this._isExpanded = !this._isExpanded;
-
-                return this;
-            }
-
-            get entries () { return this._entries; }
-
-            addEntry (entry, position = this._entries.length) {
-                this._entries.splice(position, 0, entry);
-
-                return this;
-            }
-
-            removeEntry (entry) {
-                const index = this._entries.indexOf(entry);
-
-                if (index !== -1) {
-                    this._entries.splice(index, 1);
-                }
-
-                return this;
-            }
-        }
+        // jscs:disable maximumLineLength
+        let config = [
+            [makeLegendNode, 'Layer Node - Bu Warker|esriFeature|esriGeometryPolygon|7252'],
+            [makeLegendNode, 'Layer Node - Kru Lin Craw|esriDynamic|esriGeometryPoint|1'],
+            [makeLegendSet, 'Visibiilty set',
+                [
+                    [makeLegendNode, 'Set Option 1 - Glukity Glu|esriDynamic|esriGeometryPoint|33'],
+                    [makeLegendNode, 'Set Option 2 - GNU is not Unit|esriDynamic|esriGeometryPoint|33'],
+                    [makeLegendGroup, 'Legend Group node - Simu',
+                        [
+                            [makeLegendNode, 'Layer Node - Angler Fast|esriDynamic|esriGeometryPoint|33'],
+                            [makeInfoSection, 'Wilson Push|title'],
+                            [makeInfoSection, 'Push Push are a rock band formed in the 1990s from Auckland, New Zealand. They are best known for their single Trippin|text'],
+                            [makeLegendSet, 'Visibiilty set',
+                                [
+                                    [makeLegendNode, 'Sub Set Option 1 - Glukity Glu|esriDynamic|esriGeometryPoint|33'],
+                                    [makeLegendNode, 'Sub Set Option 2 - GNU is not Unit|esriDynamic|esriGeometryPoint|33']
+                                ]
+                            ]
+                        ],
+                        [makeLegendNode, 'Set Option 3 - Lost laptop|esriDynamic|esriGeometryPoint|33']
+                    ],
+                    [makeLegendNode, 'Set Option 4 - GNU is not Unit|esriDynamic|esriGeometryPoint|33']
+                ]],
+            [makeLegendGroup, 'Legend Group node - Simu',
+                [
+                    [makeLegendNode, 'Layer Node - Angler Fast|esriDynamic|esriGeometryPoint|33'],
+                    [makeInfoSection, 'Wilson Push|title'],
+                    [makeInfoSection, 'Push Push are a rock band formed in the 1990s from Auckland, New Zealand. They are best known for their single Trippin|text'],
+                    [makeInfoSection, 'https://d13yacurqjgara.cloudfront.net/users/355650/screenshots/2181500/unicorn_drib_v2.gif|image'],
+                    [makeLegendNode, 'Layer Node - Coppe Bash|esriDynamic|esriGeometryPoint|53']
+                ]]
+        ];
 
         class LayerRecordInterface {
             /**
@@ -489,42 +310,6 @@
             setSnapshot () {         throw new Error(`Call not supported.`); }
         }
 
-        //
-
-        // jscs:disable maximumLineLength
-        let config = [
-            [makeLegendNode, 'Layer Node - Bu Warker|esriFeature|esriGeometryPolygon|7252'],
-            [makeLegendNode, 'Layer Node - Kru Lin Craw|esriDynamic|esriGeometryPoint|1'],
-            [makeLegendSet, 'Visibiilty set',
-                [
-                    [makeLegendNode, 'Set Option 1 - Glukity Glu|esriDynamic|esriGeometryPoint|33'],
-                    [makeLegendNode, 'Set Option 2 - GNU is not Unit|esriDynamic|esriGeometryPoint|33'],
-                    [makeLegendGroup, 'Legend Group node - Simu',
-                        [
-                            [makeLegendNode, 'Layer Node - Angler Fast|esriDynamic|esriGeometryPoint|33'],
-                            [makeInfoSection, 'Wilson Push|title'],
-                            [makeInfoSection, 'Push Push are a rock band formed in the 1990s from Auckland, New Zealand. They are best known for their single Trippin|text'],
-                            [makeLegendSet, 'Visibiilty set',
-                                [
-                                    [makeLegendNode, 'Sub Set Option 1 - Glukity Glu|esriDynamic|esriGeometryPoint|33'],
-                                    [makeLegendNode, 'Sub Set Option 2 - GNU is not Unit|esriDynamic|esriGeometryPoint|33']
-                                ]
-                            ]
-                        ],
-                        [makeLegendNode, 'Set Option 3 - Lost laptop|esriDynamic|esriGeometryPoint|33']
-                    ],
-                    [makeLegendNode, 'Set Option 4 - GNU is not Unit|esriDynamic|esriGeometryPoint|33']
-                ]],
-            [makeLegendGroup, 'Legend Group node - Simu',
-                [
-                    [makeLegendNode, 'Layer Node - Angler Fast|esriDynamic|esriGeometryPoint|33'],
-                    [makeInfoSection, 'Wilson Push|title'],
-                    [makeInfoSection, 'Push Push are a rock band formed in the 1990s from Auckland, New Zealand. They are best known for their single Trippin|text'],
-                    [makeInfoSection, 'https://d13yacurqjgara.cloudfront.net/users/355650/screenshots/2181500/unicorn_drib_v2.gif|image'],
-                    [makeLegendNode, 'Layer Node - Coppe Bash|esriDynamic|esriGeometryPoint|53']
-                ]]
-        ];
-
         let idcounter = 0;
 
         service.secondToc = {
@@ -556,7 +341,7 @@
                 get: function () { return parts[3]; }
             });
 
-            const ln = new LegendNode(co, idcounter++);
+            const ln = new LegendBlock.Node(co, idcounter++);
 
             $timeout(() => {
                 co._state = 'loaded';
@@ -581,7 +366,7 @@
                 get: function () { return parts[0]; }
             });
 
-            const li = new LegendInfo(co, idcounter++);
+            const li = new LegendBlock.Info(co, idcounter++);
             return li;
         }
 
@@ -596,7 +381,7 @@
                 get: function () { return parts[0]; }
             });
 
-            const lg = new LegendGroup(co, idcounter++);
+            const lg = new LegendBlock.Group(co, idcounter++);
 
             $timeout(() => {
                 items.forEach(item => {
@@ -631,7 +416,7 @@
                 get: function () { return parts[0]; }
             });
 
-            const ls = new LegendSet(co, idcounter++);
+            const ls = new LegendBlock.Set(co, idcounter++);
 
             items.forEach(item => {
                 const newEntry = item[0](item[1], item[2]);
@@ -673,7 +458,7 @@
 
         //
 
-        const le1 = new LegendNode(co1, 'blha');
+        const le1 = new LegendBlock.Node(co1, 'blha');
 
         const co2 = new LayerRecordInterface({},
             ['visibility', 'opacity', 'data', 'boundingBox', 'query', 'snapshot', 'metadata', 'boundaryZoom',
@@ -700,7 +485,7 @@
             get: function () { return 1; }
         });
 
-        const le2 = new LegendNode(co2, 'foobar');
+        const le2 = new LegendBlock.Node(co2, 'foobar');
 
         service.secondToc2 = {
             items: [
