@@ -20,8 +20,8 @@ const merge = require('merge-stream');
 const lazypipe = require('lazypipe');
 const fs = require('fs');
 
-const jsDefaults = require('json-schema-defaults');
-const jsRefParser = require('json-schema-ref-parser');
+// const jsDefaults = require('json-schema-defaults');
+// const jsRefParser = require('json-schema-ref-parser');
 
 require('gulp-help')(gulp);
 
@@ -682,6 +682,12 @@ function log(msg) {
  * Generates defaults from selected config schema definitions.
  */
 gulp.task('configdefaults', done => {
+    // do not generate config defaults
+    // TODO: check if this is needed at all for schema 2
+    done();
+
+    return true;
+    /*
     jsRefParser.dereference(config.schema).then(schema => {
         const defs = [
             'basicLayerOptionsNode',
@@ -699,7 +705,7 @@ gulp.task('configdefaults', done => {
         });
 
         done();
-    });
+    });*/
 });
 
 /**
