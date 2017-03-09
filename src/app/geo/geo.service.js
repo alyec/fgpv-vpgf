@@ -109,9 +109,14 @@
                     // expose layerRegistry service on geoService
                     angular.extend(service, lr);
 
+                    // TODO: move blueprint construction to the layer registry
+                    /*
                     const layerBlueprints = config.layers.map(layerConfig =>
                         new LayerBlueprint.service(layerConfig, epsgLookup));
                     service.constructLayers(layerBlueprints);
+                    */
+
+                    service.constructLayers([]);
 
                     return identifyService(state);
                 })

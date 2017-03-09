@@ -112,7 +112,9 @@
                 ogcWms: 'compoundLayerOptionsNode',
                 ogcWmsLayerEntry: 'wmsLayerEntryNode'
             };
-            Object.entries(LAYER_TYPE_OPTIONS)
+
+            // TODO: implement new default values generation
+            /*Object.entries(LAYER_TYPE_OPTIONS)
                 .forEach(([key, value]) => {
                     service[key] = {
                         // get default options for a specific layer type
@@ -133,7 +135,7 @@
                                 }
                             })
                     };
-                });
+                });*/
 
             return service;
         });
