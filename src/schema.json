@@ -256,6 +256,7 @@
                     "minItems": 1
                 }
             },
+            "required": ["exclusiveVisibility"],
             "additionalProperties": false
         },
         "symbologyStack": {
@@ -293,23 +294,27 @@
                     "properties": {
                         "infoType": { "type": "string", "enum": [ "title" ] },
                         "content": { "type": "string" }
-                    }
+                    },
+                    "additionalProperties": false
                 },
                 {
                     "type": "object",
                     "properties": {
                         "infoType": { "type": "string", "enum": [ "image" ] },
                         "content": { "type": "string" }
-                    }
+                    },
+                    "additionalProperties": false
                 },
                 {
                     "type": "object",
                     "properties": {
                         "infoType": { "type": "string", "enum": [ "text" ] },
                         "content": { "type": "string" }
-                    }
+                    },
+                    "additionalProperties": false
                 }
-            ]
+            ],
+            "required": ["infoType", "content"]
         },
 
         "legendAuto": {
