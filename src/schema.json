@@ -79,9 +79,10 @@
             "type": "object",
             "properties": {
                 "id": { "type": "string" },
-                "default": { "$ref": "#/definitions/extentWithReferenceNode", "description": "The default (starting) extent." },
-                "full": { "$ref": "#/definitions/extentWithReferenceNode", "description": "The full extent (should give good view of the whole map, not necessarily the maximum extent); default will be used if not supplied." },
-                "maximum": { "$ref": "#/definitions/extentWithReferenceNode", "description": "The maximum extent; full or default extents will be used if not supplied." }
+                "spatialReference": { "$ref": "#/definitions/spatialReferenceNode", "description": "The projection for the given extents" },
+                "default": { "$ref": "#/definitions/extentNode", "description": "The default (starting) extent." },
+                "full": { "$ref": "#/definitions/extentNode", "description": "The full extent (should give good view of the whole map, not necessarily the maximum extent); default will be used if not supplied." },
+                "maximum": { "$ref": "#/definitions/extentNode", "description": "The maximum extent; full or default extents will be used if not supplied." }
             },
             "required": [ "id", "default" ],
             "additionalProperties": false
@@ -116,6 +117,17 @@
                 }
             },
             "required": [ "id", "lods" ],
+            "additionalProperties": false
+        },
+        "tileSchemaNode": {
+            "type": "object",
+            "properties": {
+                "id": { "type": "string", "description": "A unique id identifying a tile schema (combination of an extent set and a zoom scale)" },
+                "name": { "type": "string", "description": "The name to display in the basemap selector for the set of basemaps referencing this schema" },
+                "extentId": { "type": "string", "description": "The extent set to be used for this basemap (should reference map.extentSets.id)" },
+                "lodId": { "type": "string", "description": "Optional.  The level of details set to be used for this basemap (should reference map.lod.id)" }
+            },
+            "required": ["extentId", "lodId", "id", "name"],
             "additionalProperties": false
         },
 
@@ -459,9 +471,7 @@
                 "typeSummary": { "type": "string", "description": "Optional base map type. This is descriptive only, and will be shown in the basemap selector." },
                 "altText": { "type": "string", "description": "Alt text for the basemap thumbnail image.Alt text for the basemap thumbnail image." },
                 "thumbnailUrl": { "type": "string", "description": "Path to image file to display in the basemap selector." },
-                "wkid": { "type": "number", "description": "The WKID of spatial reference" },
-                "extentId": { "type": "string", "description": "The extent set to be used for this basemap (should reference map.extentSets.id)" },
-                "lodId": { "type": "string", "description": "Optional.  The level of details set to be used for this basemap (should reference map.lod.id)" },
+                "tileSchemaId": { "type": "string", "description": "The tile schema for this basemap (should reference map.tileSchemas.id)" },
                 "layers": { "$ref": "#/definitions/layerList" },
                 "attribution": { "$ref": "#/definitions/attributionNode" },
                 "zoomLevels": {
@@ -474,7 +484,7 @@
                     "additionalProperties": false
                 }
             },
-            "required": [ "id", "name", "description", "altText", "thumbnailUrl", "wkid", "extentId" ],
+            "required": [ "id", "name", "description", "altText", "thumbnailUrl", "tileSchemaId" ],
             "additionalProperties": false
         },
 
@@ -625,6 +635,11 @@
                     "items": { "$ref": "#/definitions/lodNode" },
                     "description": "The levels of detail available for the map"
                 },
+                "tileSchemas": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/tileSchemaNode" },
+                    "description": "A unique combination of an LoD and an extent set (each basemap must fit into a tile schema)"
+                },
                 "components": {
                     "type": "object",
                     "$ref": "#/definitions/mapComponentsNode"
@@ -635,7 +650,7 @@
                 },
                 "baseMaps": {
                     "type": "array",
-                    "items": { "oneOf": [ { "$ref": "#/definitions/baseMapNode" } ] },
+                    "items": { "$ref": "#/definitions/baseMapNode" },
                     "description": "A list of basemaps to be made available via the basemap selector."
                 },
                 "layers": {
