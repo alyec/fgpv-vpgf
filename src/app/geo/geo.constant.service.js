@@ -65,7 +65,7 @@
     });
 
     // this is populated with default schema snippets during build;
-    const LAYER_CONFIG_DEFAULTS = '_LAYER_CONFIG_DEFAULTS_';
+    // const LAYER_CONFIG_DEFAULTS = '_LAYER_CONFIG_DEFAULTS_';
     GEO.Metadata = { XSLT_LANGUAGE_NEUTRAL: '_XSLT_BLOB_' };
 
     /**
@@ -79,8 +79,10 @@
         .module('app.geo')
         .constant('Geo', GEO)
         .service('layerDefaults', () => {
+            const service = {};
+
             // construct layer default options and flags objects from schema snippets
-            const flagDefaults = {
+            /*const flagDefaults = {
                 type: {
                     visible: true
                 },
@@ -101,8 +103,6 @@
                 }
             };
 
-            const service = {};
-
             const LAYER_TYPE_OPTIONS = {
                 esriDynamic: 'dynamicLayerOptionsNode',
                 esriDynamicLayerEntry: 'dynamicLayerEntryNode',
@@ -111,7 +111,7 @@
                 esriTile: 'basicLayerOptionsNode',
                 ogcWms: 'compoundLayerOptionsNode',
                 ogcWmsLayerEntry: 'wmsLayerEntryNode'
-            };
+            };*/
 
             // TODO: implement new default values generation
             /*Object.entries(LAYER_TYPE_OPTIONS)

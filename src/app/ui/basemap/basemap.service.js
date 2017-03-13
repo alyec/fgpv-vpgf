@@ -16,6 +16,105 @@
 
     function basemapService($rootScope, $rootElement, events, configService, $translate, $injector, $mdSidenav, $q) {
 
+        class Lods {
+            constructor({ id, lods }) {
+                this._id = id;
+                this._lods = lods;
+            }
+
+            get id () { return this._id; }
+            get lods () { return this._lods; }
+        }
+
+        /**
+         * @param {Object} spatialReference spatialreference object in the form of { wkid: <Number> }
+         */
+        class ExtentSet {
+            constructor({ id, spatialReference, default: _default, full, maximum }) {
+                this._id = id;
+                this._spatialReference = spatialReference;
+
+                this._default = _default;
+                this._full = full || _default;
+                this._maximum = maximum || _default;
+            }
+
+            get id () { return this._id; }
+            get spatialReference () { return this._spatialReference; }
+
+            get default () { return this._returnExtent(this._default); }
+            get full () { return this._returnExtent(this._full); }
+            get maximum () { return this._returnExtent(this._maximum); }
+
+            _returnExtent(extent) {
+                return angular.extend(
+                    {},
+                    extent, {
+                    spatialReference: this._spatialReference
+                });
+            }
+        }
+
+        class TileSchema {
+            constructor({ id, lodsId, name }, extentSet, lods) {
+                this._id = id;
+                this._name = name;
+                this._lodsId = lodsId;
+
+                this._extentSet = extentSet;
+                this._lods = lods;
+            }
+
+            get name () { return this._name; }
+            get id () { return this._id; }
+
+            get extentSet () { return this._extentSet; }
+            get lods () { return this._lods; }
+
+            makeBlankBasemap() {
+                return new Basemap({
+                    name: $translate.instant('basemap.blank.title'),
+                    description: $translate.instant('basemap.blank.desc'),
+                    type: 'blank',
+                    id: `blank_basemap_${this._id}`,
+                    url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7/',
+                    attribution: '',
+                    tileSchema: this
+                });
+            }
+        }
+
+        class Basemap {
+            constructor({ id, name, description, type, layers, attribution }, tileSchema) {
+                this._id = id;
+                this._name = name;
+                this._description = description;
+                this._type = type;
+                this._layers = layers;
+                this._url = layers[0].url;
+                this._attribution = attribution;
+                this._tileSchema = tileSchema;
+            }
+
+            _isSelected = false;
+
+            get id () { return this._id ;}
+            get name () { return this._name; }
+            get description () { return this._description; }
+            get type () { return this._type; }
+            get layers () { return this._layers; }
+            get url () { return this._url; }
+            get attribution () { return this._attribution; }
+            get tileSchema () { return this._tileSchema; }
+
+            // convenience
+            get wkid () { return this._tileSchema.extentSet.spatialReference.wkid; }
+
+            get isSelected () { return this._isSelected; }
+            select() { this._isSelected = true; }
+            deselect() { this._isSelected = false; }
+        }
+
         let bmSelected; // the current selected basemap
         let bmBlankSelected = null; // the current selected blank basemap
         let initialBasemapId;
@@ -23,7 +122,17 @@
 
         const onChangeCallback = [];
         const projections = [];
+
         const service = {
+            extentSets: [],
+            tileSchemas: [],
+            basemaps: [],
+            selectedBasemap: null,
+
+            selectBasemap,
+
+            constructBasemaps,
+
             select,
             getSelected,
             reload,
@@ -131,6 +240,21 @@
             });
         }
 
+        function selectBasemap(newSelection) {
+            const oldSelection = service.selectedBasemap || { deselect: angular.noop };
+
+            oldSelection.deselect();
+            newSelection.select();
+
+            service.selectedBasemap = newSelection;
+
+            // TODO: use this call after config is typed and basemap classes are moved out of here
+            // geoService.changeBasemap(basemap);
+
+            // TODO: would any other code need to know when the basemap changes? an event for that can be fired
+            // $rootScope.$broadcast('rv-basemap-change', [newSelection, oldSelection]);
+        }
+
         /**
          * Set the provided basemap as selected and update the map
          *
@@ -167,6 +291,42 @@
             return bmSelected;
         }
 
+        function constructBasemaps(mapConfig) {
+            const extentSets = mapConfig.map.extentSets.map(extentSetConfig =>
+                (new ExtentSet(extentSetConfig)));
+
+            const lodsCollection = mapConfig.map.lods.map(lodsConfig =>
+                (new Lods(lodsConfig)));
+
+            const tileSchemas = mapConfig.map.tileSchemas.map(tileSchemaConfig => {
+                const extentSet = extentSets.find(extentSet =>
+                    extentSet.id === tileSchemaConfig.extentSetId)
+
+                const lods = lodsCollection.find(lods =>
+                    lods.id === tileSchemaConfig.lodsId);
+
+                const tileSchema = new TileSchema(tileSchemaConfig, extentSet, lods);
+
+                return tileSchema;
+            });
+
+            const basemaps = mapConfig.baseMaps.map(baseMapConfig => {
+                const tileSchema = tileSchemas.find(tileSchema =>
+                    tileSchema.id === baseMapConfig.tileSchemaId);
+
+                const basemap = new Basemap(baseMapConfig, tileSchema);
+
+                return basemap;
+            });
+
+            return {
+                extentSets,
+                basemaps,
+                lodsCollection,
+                tileSchemas
+            };
+        }
+
         /**
          * Organizes basemaps into projection groupings and inserts a blank basemap
          *
@@ -174,7 +334,13 @@
          * @private
          * @param {Array} basemapList   A list of basemap objects
          */
-        function _addBaseMaps(basemapList) {
+        function _addBaseMaps(mapConfig) {
+
+            // creates lists of extentSets, tileShemas and basemaps;
+            // the basemap list is flat and will be grouped by tileSchema id and sorted by basemap name directly in the template
+
+
+            /*
 
             basemapList.forEach(bm => {
                 const basemap = _normalizeBasemap(bm);
@@ -223,6 +389,7 @@
 
             bmSelected.selected = true;
             onChangeCallback.forEach(cb => cb(projections, bmSelected));
+            */
         }
     }
 

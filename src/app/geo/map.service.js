@@ -94,7 +94,7 @@
                 mapObject = gapiService.gapi.mapManager.Map(geoState.mapNode, {
 
                     // basemap: 'gray',
-                    extent: geoState.mapExtent,
+                    extent: gapiService.gapi.mapManager.getExtentFromJson(geoState.mapExtent),
                     lods: geoState.lods
                 });
 
@@ -692,8 +692,12 @@
             function setSelectedBaseMap(id) {
                 geoState.selectedBaseMapId = id;
 
-                let selectedBaseMap;
+                // TODO: this should be stored where?
+                geoState.selectedBaseMap = geoState._map.basemaps[0];
 
+                // TODO: select initial basemap from the config value
+
+                /*
                 // search base map config based on  'blank_basemap_' condition
                 if (!id.startsWith(blankBaseMapIdPattern)) {
 
@@ -716,13 +720,18 @@
                 // get selected base map extent set id, so we can store teh map extent
                 geoState.selectedBaseMapExtentSetId = selectedBaseMap.extentId;
                 geoState.selectedBaseMapLodId = selectedBaseMap.lodId;
+                */
 
-                const defaultExtentJson = getDefaultExtFromExtentSets(config.map.extentSets);
-                geoState.mapExtent = gapiService.gapi.mapManager.getExtentFromJson(defaultExtentJson);
+                // const defaultExtentJson = getDefaultExtFromExtentSets(config.map.extentSets);
+                // geoState.mapExtent = gapiService.gapi.mapManager.getExtentFromJson(defaultExtentJson);
 
-                geoState.lods = getLod(config.map.lods);
+                geoState.mapExtent = geoState.selectedBaseMap.tileSchema.extentSet.default;
 
-                return selectedBaseMap;
+                geoState.lods = geoState.selectedBaseMap.tileSchema.lods.lods;
+
+                // geoState.lods = getLod(config.map.lods);
+
+                return geoState.selectedBaseMap;
             }
 
             /**
@@ -758,8 +767,11 @@
 
                 return $q(resolve => {
                     const map = service.mapObject;
-                    const lFullExtent = getFullExtFromExtentSets(config.map.extentSets);
-                    const lMaxExtent = getMaxExtFromExtentSets(config.map.extentSets);
+                    // const lFullExtent = getFullExtFromExtentSets(config.map.extentSets);
+                    // const lMaxExtent = getMaxExtFromExtentSets(config.map.extentSets);
+
+                    const lFullExtent = gapiService.gapi.mapManager.getExtentFromJson(geoState.selectedBaseMap.tileSchema.extentSet.full);
+                    const lMaxExtent = gapiService.gapi.mapManager.getExtentFromJson(geoState.selectedBaseMap.tileSchema.extentSet.maximum);
 
                     setMapLoadingFlag(true);
 

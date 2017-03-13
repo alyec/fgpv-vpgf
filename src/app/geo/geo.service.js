@@ -96,13 +96,18 @@
                 .then(cf => {
                     config = cf;
 
+                    // TODO: remove after config is typed and returns proper typed objects
+                    state._map = service._map = basemapService.constructBasemaps(config);
+
                     // assemble geo state object
                     return mapService(state, config);
                 })
                 .then(ms => {
                     // expose mapService on geoService
                     angular.extend(service, ms);
-                    basemapService.reload();
+
+                    // basemapService.reload();
+
                     return layerRegistry(state, config);
                 })
                 .then(lr => {
