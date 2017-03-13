@@ -189,7 +189,7 @@ function libbuild() {
  */
 function pluginbuild() {
     return gulp.src(config.jsCorePlugins)
-        .pipe($.babel({ presets: ['latest'] }))
+        .pipe($.babel({ presets: ['latest', 'stage-2'] }))
         .pipe($.concat(config.jsCorePluginFile));
 }
 
@@ -242,7 +242,7 @@ function jsbuild() {
         .pipe(constantServiceFilter.restore)
 
         .pipe($.plumber({ errorHandler: injectError }))
-        .pipe($.babel({ presets: ['latest'] }))
+        .pipe($.babel({ presets: ['latest', 'stage-2'] }))
         .pipe($.plumber.stop())
         .pipe($.ngAnnotate({
             remove: true,
@@ -282,7 +282,7 @@ gulp.task('jsrollup', 'Roll up all js into one file',
         const jsapp = jsbuild();
         const seed = gulp.src([config.jsGlobalRegistry, config.jsAppSeed])
             .pipe($.plumber({ errorHandler: injectError }))
-            .pipe($.babel({ presets: ['latest'] }))
+            .pipe($.babel({ presets: ['latest', 'stage-2'] }))
             .pipe($.plumber.stop())
             .pipe($.if(PROD_MODE, $.removeLogging()));
 
@@ -319,7 +319,7 @@ gulp.task('jsinjector', 'Copy fixed assets to the build directory',
         // if it gets bigger we should split it into a separate file
         const injector = merge(
             gulp.src(config.jsInjectorFile)
-                .pipe($.babel({ presets: ['latest'] }))
+                .pipe($.babel({ presets: ['latest', 'stage-2'] }))
                 .pipe($.if(PROD_MODE, $.removeLogging())),
             polyfills
         )
