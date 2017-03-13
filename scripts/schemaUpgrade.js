@@ -29,6 +29,14 @@ function oneToTwo(cfg) {
     const stateCopy = 'opacity visibility boundingBox query snapshot'.split(' ');
     const controlsCopy = 'opacity visibility boundingBox query snapshot metadata boundaryZoom refresh reload remove settings data'.split(' ');
     const entryCopy = 'id index name outfields'.split(' ');
+    const baseMapDirectCopy = 'id name description typeSummary altText thumbnailUrl layers attribution zoomLevels'.split(' ');
+    const namingThings = {
+        '4326': 'Mercator',
+        '102100': 'Web Mercator',
+        '3857': 'Web Mercator',
+        '3978': 'Lambert',
+        '3979': 'Lambert'
+    };
 
     let res = { ui: {}, version: "2.0" };
     if (cfg.language) {
@@ -72,6 +80,50 @@ function oneToTwo(cfg) {
             }
 
             return l;
+        });
+    }
+
+    const extentMap = {};
+    res.map.extentSets.forEach(es => {
+        extentMap[es.id] = { id: es.id };
+        'default full maximum'.split(' ').filter(key => es.hasOwnProperty(key)).forEach(key => {
+            extentMap[es.id][key] = { xmax: es[key].xmax, xmin: es[key].xmin, ymax: es[key].ymax, ymin: es[key].ymin };
+            extentMap[es.id].spatialReference = es[key].spatialReference;
+        });
+    });
+    res.map.extentSets = Object.keys(extentMap).map(key => extentMap[key]);
+
+    const lodMap = {};
+    res.map.lods.forEach(l => lodMap[l.id] = l);
+
+    const tileSchemaMap = {};
+    res.map.tileSchemas = [];
+    Object.keys(extentMap).forEach(eid => Object.keys(lodMap).forEach(lid => {
+        const ts = {};
+        const tsId = eid + '#' + lid;
+        ts.id = tsId;
+        const wkid = extentMap[eid].spatialReference.wkid;
+        if (namingThings.hasOwnProperty(String(wkid))) {
+            ts.name = namingThings[String(wkid)] + ' Maps';
+        } else {
+            ts.name = ts.id;
+        }
+        ts.extentId = eid;
+        ts.lodId = lid;
+        tileSchemaMap[tsId] = ts;
+        res.map.tileSchemas.push(ts);
+    }));
+
+    if (cfg.baseMaps) {
+        res.map.baseMaps = cfg.baseMaps.map(obm => {
+            const bm = {};
+            baseMapDirectCopy.filter(key => obm.hasOwnProperty(key)).forEach(key => bm[key] = obm[key]);
+            const tsId = obm.extentId + '#' + obm.lodId;
+            if (!tileSchemaMap.hasOwnProperty(tsId)) {
+                console.error('Tile schema was not converted');
+            }
+            bm.tileSchemaId = tsId;
+            return bm;
         });
     }
 
