@@ -60,9 +60,6 @@
           "spatialReference": {
             "wkid": 3978
           }
-        },
-        "spatialReference": {
-          "wkid": 3978
         }
       },
       {
@@ -76,25 +73,7 @@
             "wkid": 102100,
             "latestWkid": 3857
           }
-        },
-        "spatialReference": {
-          "wkid": 102100,
-          "latestWkid": 3857
         }
-      }
-    ],
-    "tileSchemas": [
-      {
-        "id": "tileLambert",
-        "extentSetId": "EXT_NRCAN_Lambert_3978",
-        "lodsId": "LOD_NRCAN_Lambert_3978",
-        "name": "Lambert"
-      },
-      {
-        "id": "tileMercator",
-        "extentSetId": "EXT_ESRI_World_AuxMerc_3857",
-        "lodsId": "LOD_ESRI_World_AuxMerc_3857",
-        "name": "Mercator"
       }
     ],
     "lods": [
@@ -158,6 +137,42 @@
       "name":"Air Ozone Scale Dep",
       "layerType":"esriFeature",
       "url":"http://maps-cartes.ec.gc.ca/arcgis/rest/services/CESI/CESI_Air_Ozone/MapServer/2"
+    },
+    {
+      "id":"scaleDepDynamic",
+      "name":"Air SO2 Scale Dep",
+      "layerType":"esriDynamic",
+      "layerEntries": [{"index": 1}, {"index": 2}, {"index": 3}, {"index": 4}],
+      "url":"http://maps-cartes.ec.gc.ca/arcgis/rest/services/CESI/CESI_Air_SO2/MapServer"
+    },
+    {
+      "id":"land_PubStdZone_detail_proj",
+      "name": "Land Pub Standard Zone Details",
+      "layerType":"esriFeature",
+      "url":"http://ec.gc.ca/arcgis/rest/services/data_donnees/be12386d/MapServer/0",
+      "options": {
+        "opacity": { "value": 0.1 }
+      }
+    },
+    {
+      "id":"ecogeo",
+      "name": "Eco Geo",
+      "layerType":"esriDynamic",
+      "layerEntries": [{"index": 6}, {"index": 7}, {"index": 8}, {"index": 9}],
+      "url":"http://section917.cloudapp.net/arcgis/rest/services/EcoGeo/MapServer",
+      "metadataUrl": "http://intranet.ecdmp-stage.cmc.ec.gc.ca/geonetwork/srv/eng/csw?service=CSW&version=2.0.2&request=GetRecordById&outputSchema=csw:IsoRecord&id=1c0eb1b2-93ae-49ae-a3ce-e495d8fd767b&_=1417717957845"
+    },
+    {
+      "id":"geomet_temp",
+      "name":"GeoMet Temp",
+      "layerType":"ogcWms",
+      "featureInfoMimeType": "text/plain",
+      "layerEntries":[{"id":"GDPS.ETA_TT"}],
+      "url":"http://geo.weather.gc.ca/geomet/",
+      "options": {
+        "visibility": { "value": false },
+        "opacity": { "value": 0.4 }
+      }
     }
   ],
   "baseMaps": [
@@ -168,12 +183,10 @@
       "altText": "altText - The Canada Base Map - Transportation (CBMT)",
       "thumbnailUrl": "assets/images/basemap/baseToponrcan.jpg",
       "wkid": 3978,
-
-      "tileSchemaId": "tileLambert",
-
+      "extentId": "EXT_NRCAN_Lambert_3978",
+      "lodId": "LOD_NRCAN_Lambert_3978",
       "layers": [
         {
-          "opacity": 0,
           "id": "CBMT",
           "layerType": "esriFeature",
           "url": "http://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer"
@@ -187,7 +200,8 @@
       "altText": "altText - Canada base map - Simple",
       "thumbnailUrl": "assets/images/basemap/baseSimple.jpg",
       "wkid": 3978,
-      "tileSchemaId": "tileLambert",
+      "extentId": "EXT_NRCAN_Lambert_3978",
+      "lodId": "LOD_NRCAN_Lambert_3978",
       "layers": [
         {
           "id": "SMR",
@@ -203,7 +217,8 @@
       "altText": "altText - Canada Base Map - Elevation (CBME)",
       "thumbnailUrl": "assets/images/basemap/baseCBMT_CBCT_GEOM_3978.jpg",
       "wkid": 3978,
-      "tileSchemaId": "tileLambert",
+      "extentId": "EXT_NRCAN_Lambert_3978",
+      "lodId": "LOD_NRCAN_Lambert_3978",
       "layers": [
         {
           "id": "CBME_CBCE_HS_RO_3978",
@@ -219,7 +234,8 @@
       "altText": "altText - Canada Base Map - Transportation (CBMT)",
       "thumbnailUrl": "assets/images/basemap/baseCBME_CBCE_HS_RO_3978.jpg",
       "wkid": 3978,
-      "tileSchemaId": "tileLambert",
+      "extentId": "EXT_NRCAN_Lambert_3978",
+      "lodId": "LOD_NRCAN_Lambert_3978",
       "layers": [
         {
           "id": "CBMT_CBCT_GEOM_3978",
@@ -235,7 +251,8 @@
       "altText": "altText - World Imagery",
       "thumbnailUrl": "assets/images/basemap/imagery.jpg",
       "wkid": 102100,
-      "tileSchemaId": "tileMercator",
+      "extentId": "EXT_ESRI_World_AuxMerc_3857",
+      "lodId": "LOD_ESRI_World_AuxMerc_3857",
       "layers": [
         {
           "id": "World_Imagery",
@@ -251,7 +268,8 @@
       "altText": "altText - World Physical Map",
       "thumbnailUrl": "assets/images/basemap/imagery.jpg",
       "wkid": 102100,
-      "tileSchemaId": "tileMercator",
+      "extentId": "EXT_ESRI_World_AuxMerc_3857",
+      "lodId": "LOD_ESRI_World_AuxMerc_3857",
       "layers": [
         {
           "id": "World_Physical_Map",
@@ -267,7 +285,8 @@
       "altText": "altText - World Shaded Relief",
       "thumbnailUrl": "assets/images/basemap/imagery.jpg",
       "wkid": 102100,
-      "tileSchemaId": "tileMercator",
+      "extentId": "EXT_ESRI_World_AuxMerc_3857",
+      "lodId": "LOD_ESRI_World_AuxMerc_3857",
       "layers": [
         {
           "id": "World_Shaded_Relief",
@@ -283,7 +302,8 @@
       "altText": "altText - ESWorld Street Map",
       "thumbnailUrl": "assets/images/basemap/imagery.jpg",
       "wkid": 102100,
-      "tileSchemaId": "tileMercator",
+      "extentId": "EXT_ESRI_World_AuxMerc_3857",
+      "lodId": "LOD_ESRI_World_AuxMerc_3857",
       "layers": [
         {
           "id": "World_Street_Map",
@@ -299,7 +319,8 @@
       "altText": "altText - World Terrain Base",
       "thumbnailUrl": "assets/images/basemap/imagery.jpg",
       "wkid": 102100,
-      "tileSchemaId": "tileMercator",
+      "extentId": "EXT_ESRI_World_AuxMerc_3857",
+      "lodId": "LOD_ESRI_World_AuxMerc_3857",
       "layers": [
         {
           "id": "World_Terrain_Base",
@@ -315,7 +336,8 @@
       "altText": "altText - World Topographic Map",
       "thumbnailUrl": "assets/images/basemap/imagery.jpg",
       "wkid": 102100,
-      "tileSchemaId": "tileMercator",
+      "extentId": "EXT_ESRI_World_AuxMerc_3857",
+      "lodId": "LOD_ESRI_World_AuxMerc_3857",
       "layers": [
         {
           "id": "World_Topo_Map",
