@@ -15,7 +15,7 @@
         .factory('geoService', geoService);
 
     function geoService($http, $q, $rootScope, events, mapService, layerRegistry, configService,
-        identifyService, LayerBlueprint, basemapService) {
+        identifyService, LayerBlueprint, ConfigObject) {
 
         // TODO update how the layerOrder works with the UI
         // Make the property read only. All angular bindings will be a one-way binding to read the state of layerOrder
@@ -29,7 +29,9 @@
             reloadLayer: l => layerRegistry.reloadLayer(l),
             snapshotLayer: l => layerRegistry.snapshotLayer(l),
 
-            state: null
+            state: null,
+
+            configObject: null
         };
 
         return service;
@@ -96,8 +98,10 @@
                 .then(cf => {
                     config = cf;
 
-                    // TODO: remove after config is typed and returns proper typed objects
-                    state._map = service._map = basemapService.constructBasemaps(config);
+                    // TODO: remove after config is typed and returns proper typed objects;
+                    // it's like this will have to be moved to the mapService or something
+                    state.configObject = service.configObject = new ConfigObject(config);
+                    // state._map = service._map = basemapService.constructBasemaps(config);
 
                     // assemble geo state object
                     return mapService(state, config);

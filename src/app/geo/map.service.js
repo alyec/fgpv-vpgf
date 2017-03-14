@@ -46,7 +46,7 @@
                  */
                 mapManager: null, // Object
 
-                baseMapHasSameSP,
+                // baseMapHasSameSP,
                 setZoom,
                 shiftZoom,
                 selectBasemap,
@@ -88,14 +88,15 @@
                 }
 
                 // set selected base map id
-                setSelectedBaseMap(config.map.initialBasemapId || config.baseMaps[0].id, config);
+                setSelectedBaseMap(geoState.configObject.map.selectedBasemap);
+                // setSelectedBaseMap(config.map.initialBasemapId || config.baseMaps[0].id, config);
 
                 // FIXME remove the hardcoded settings when we have code which does this properly
                 mapObject = gapiService.gapi.mapManager.Map(geoState.mapNode, {
 
                     // basemap: 'gray',
-                    extent: gapiService.gapi.mapManager.getExtentFromJson(geoState.mapExtent),
-                    lods: geoState.lods
+                    extent: geoState.configObject.map.selectedBasemap.default,
+                    lods: geoState.configObject.map.selectedBasemap.lods
                 });
 
                 // store map object in service
@@ -108,14 +109,16 @@
                 // setup map using configs
                 // FIXME: I should be migrated to the new config schema when geoApi is updated
                 const mapSettings = {
-                    basemaps: [],
+                    basemaps: geoState.configObject.map.basemaps,
                     scalebar: { enabled: false },
                     overviewMap: { enabled: false }
                 };
 
+                /*
                 if (config.baseMaps) {
                     mapSettings.basemaps = config.baseMaps;
                 }
+                */
 
                 // TODO: components should be mandatory in the schema with value enabled false if not use
                 if (config.map.components.scaleBar && config.map.components.scaleBar.enabled) {
@@ -136,12 +139,14 @@
                 const onMapLoad = prepMapLoad();
 
                 service.mapManager = gapiService.gapi.mapManager.setupMap(mapObject, mapSettings);
-                service.mapManager.BasemapControl.setBasemap(geoState.selectedBaseMapId);
+                service.mapManager.BasemapControl.setBasemap(geoState.configObject.map.selectedBasemap.id);
 
                 service.mapManager.BasemapControl.basemapGallery.on('selection-change', event => {
                     $rootElement.find('div.ovwContainer').append('<rv-overview-toggle></rv-overview-toggle>');
                     $compile($rootElement.find('rv-overview-toggle')[0])($rootScope);
 
+                    //TODO: fix code setting basempa attribution
+                    /*
                     // get selected basemap configuration
                     const selectedBaseMapCfg = config.baseMaps.find(bm => {
                         return bm.id === event.target._selectedBasemap.id;
@@ -157,12 +162,13 @@
                     // set attribution if not a blank map
                     if (geoState.blankBaseMapId === null) {
                         $timeout(() => setAttribution(selectedBaseMapCfg), 500);
-                    }
+                    }*/
                 });
 
-                if (config.map.initialBasemapId && config.map.initialBasemapId.startsWith(blankBaseMapIdPattern)) {
+                // TODO: remove all the code related to "blank" basemaps as they will be handled differently
+                /*if (config.map.initialBasemapId && config.map.initialBasemapId.startsWith(blankBaseMapIdPattern)) {
                     hideBaseMap(true);
-                }
+                }*/
 
                 // FIXME temp link for debugging
                 window.FGPV = {
@@ -255,7 +261,7 @@
              * @function getLod
              * @private
              */
-            function getLod(lodSets) {
+            /*function getLod(lodSets) {
 
                 // In configSchema, at least one extent for a basemap
                 const lodForId = lodSets.find(lodSet => {
@@ -270,14 +276,35 @@
                 }
 
                 return lodForId.lods;
-            }
+            }*/
 
             /**
              * Switch basemap based on the uid provided.
              * @function selectBasemap
              * @param {object} selectedBaseMap selected basemap
              */
-            function selectBasemap(selectedBaseMap) {
+            function selectBasemap(basemap) {
+
+                const currentBasemap = geoState.configObject.map.selectedBasemap.deselect();
+                basemap.select();
+
+                const mapManager = service.mapManager;
+                mapManager.BasemapControl.setBasemap(basemap.id);
+
+                // TODO: put code loading new projections here; it shouldn't be in the basemap service;
+                /*if (currentBasemap.wkid !== basemap.wkid) {
+                    geoState.loadNewProjection(basemap.id)
+                }*/
+
+                /*if ($injector.get('geoService').baseMapHasSameSP(basemap.id)) { // avoid circular dependency
+                    $injector.get('geoService').selectBasemap(basemap); // avoid circular dependency
+                } else {
+                    // avoiding circular dependency on bookmarkService
+                    $injector.get('reloadService').loadNewProjection(basemap.id); // avoid circular dependency
+                }*/
+
+                return;
+                /*
                 const mapManager = service.mapManager;
                 let id = selectedBaseMap.id;
 
@@ -308,16 +335,17 @@
                     // call this to set the base map, need to call this for all, this will force
                     // update for the blank base map.
                     mapManager.BasemapControl.setBasemap(id);
-                }
+                }*/
             }
 
+            // obsolete
             /**
              * Check to see if given base map id has same wkid value as previously selected base map.
              * @function baseMapHasSameSP
              * @param {String} id base map id
              * @return {bool} true if current base map has the same wkid as the previous one
              */
-            function baseMapHasSameSP(id) {
+            /*function baseMapHasSameSP(id) {
 
                 const blankBaseMapIdPattern = 'blank_basemap_';
                 let newWkid;
@@ -343,7 +371,7 @@
 
                 return (oldWkid === newWkid);
 
-            }
+            }*/
 
             /**
              * Set attribution on selected base map.
@@ -689,11 +717,11 @@
             * @param {String} id of base map
             * @return {Object} selectedBaseMap selected basemap configuration
             */
-            function setSelectedBaseMap(id) {
-                geoState.selectedBaseMapId = id;
+            function setSelectedBaseMap(basemap) {
+                // geoState.selectedBaseMapId = id;
 
                 // TODO: this should be stored where?
-                geoState.selectedBaseMap = geoState._map.basemaps[0];
+                // geoState.selectedBaseMap = geoState.configObject.map.basemaps[0];
 
                 // TODO: select initial basemap from the config value
 
@@ -725,13 +753,13 @@
                 // const defaultExtentJson = getDefaultExtFromExtentSets(config.map.extentSets);
                 // geoState.mapExtent = gapiService.gapi.mapManager.getExtentFromJson(defaultExtentJson);
 
-                geoState.mapExtent = geoState.selectedBaseMap.tileSchema.extentSet.default;
+                // geoState.mapExtent = geoState.selectedBaseMap.tileSchema.extentSet.default;
 
-                geoState.lods = geoState.selectedBaseMap.tileSchema.lods.lods;
+                // geoState.lods = geoState.selectedBaseMap.tileSchema.lods.lods;
 
                 // geoState.lods = getLod(config.map.lods);
 
-                return geoState.selectedBaseMap;
+                // return geoState.selectedBaseMap;
             }
 
             /**
@@ -745,7 +773,7 @@
             * @returns {Object}        extent cast in Extent prototype, and in map spatial reference
             */
             function enhanceConfigExtent(extent, mapSR) {
-                const realExtent = gapiService.gapi.mapManager.getExtentFromJson(extent);
+                // const realExtent = gapiService.gapi.mapManager.getExtentFromJson(extent);
 
                 if (gapiService.gapi.proj.isSpatialRefEqual(mapSR, extent.spatialReference)) {
                     // same spatial reference, no reprojection required
@@ -770,8 +798,8 @@
                     // const lFullExtent = getFullExtFromExtentSets(config.map.extentSets);
                     // const lMaxExtent = getMaxExtFromExtentSets(config.map.extentSets);
 
-                    const lFullExtent = gapiService.gapi.mapManager.getExtentFromJson(geoState.selectedBaseMap.tileSchema.extentSet.full);
-                    const lMaxExtent = gapiService.gapi.mapManager.getExtentFromJson(geoState.selectedBaseMap.tileSchema.extentSet.maximum);
+                    //const lFullExtent = gapiService.gapi.mapManager.getExtentFromJson(geoState.selectedBaseMap.tileSchema.extentSet.full);
+                    //const lMaxExtent = gapiService.gapi.mapManager.getExtentFromJson(geoState.selectedBaseMap.tileSchema.extentSet.maximum);
 
                     setMapLoadingFlag(true);
 
@@ -782,12 +810,13 @@
                             map.addLayer(geoState.hilight);
 
                             // setup full extent
-                            if (lFullExtent) {
+                            // TODO: full and max extents can be retrieved directly from the selectedBasemap
+                            /*if (lFullExtent) {
                                 geoState.fullExtent = enhanceConfigExtent(lFullExtent, map.extent.spatialReference);
                             }
                             if (lMaxExtent) {
                                 geoState.maxExtent = enhanceConfigExtent(lMaxExtent, map.extent.spatialReference);
-                            }
+                            }*/
 
                             setMapLoadingFlag(false);
                             resolve();

@@ -30,12 +30,12 @@
         const self = this;
 
         // TODO: update when config is typed
-        self.mapConfig = geoService;
+        self.geoService = geoService;
 
         // self.basemaps = geoService._map.basemaps;
         // self.tileSchemas = geoService._map.tileSchemas;
 
-        self.selectBasemap = basemapService.selectBasemap;
+        // self.selectBasemap = basemapService.selectBasemap;
         self.closeSelector = basemapService.close;
 
         // TODO: remove
