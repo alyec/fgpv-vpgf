@@ -94,10 +94,12 @@ function oneToTwo(cfg) {
     res.map.extentSets = Object.keys(extentMap).map(key => extentMap[key]);
 
     const lodMap = {};
-    res.map.lods.forEach(l => lodMap[l.id] = l);
+    res.map.lodSets = res.map.lods;
+    delete res.map.lods;
+    res.map.lodSets.forEach(l => lodMap[l.id] = l);
 
     const tileSchemaMap = {};
-    res.map.tileSchemas = [];
+    const tsUsed = []; // set of schemas which have a basemap under them
     Object.keys(extentMap).forEach(eid => Object.keys(lodMap).forEach(lid => {
         const ts = {};
         const tsId = eid + '#' + lid;
@@ -108,10 +110,9 @@ function oneToTwo(cfg) {
         } else {
             ts.name = ts.id;
         }
-        ts.extentId = eid;
-        ts.lodId = lid;
+        ts.extentSetId = eid;
+        ts.lodSetId = lid;
         tileSchemaMap[tsId] = ts;
-        res.map.tileSchemas.push(ts);
     }));
 
     if (cfg.baseMaps) {
@@ -123,9 +124,12 @@ function oneToTwo(cfg) {
                 console.error('Tile schema was not converted');
             }
             bm.tileSchemaId = tsId;
+            tsUsed.push(tsId);
             return bm;
         });
     }
+    res.map.tileSchemas = tsUsed.map(key => tileSchemaMap[key]);
+    // console.log(util.inspect(res.map.tileSchemas, { depth: 2}))
 
     topToUi.filter(key => cfg.hasOwnProperty(key)).forEach(key => res.ui[key] = cfg[key]);
 
@@ -149,6 +153,8 @@ if (errs) {
 
 if (old_schema_versions.indexOf(cfg.version) > -1) {
     cfg = oneToTwo(cfg);
+} else {
+    console.log('No schema conversion required');
 }
 
 validator.validate(cfg, schema);

@@ -2,10 +2,42 @@
   "version": "2.0",
   "services": { "googleAPIKey": "AIzaSyD_FwYU_mT1xhTdUoiHBRjwToWUe--KVVU" },
   "map": {
-    "lods": [
+    "lodSets": [
       {
         "id": "LOD_NRCAN_Lambert_3978",
         "lods": [ { "level": 0, "resolution": 38364.660062653464, "scale": 145000000 } ]
+      }
+    ],
+   "extentSets": [
+       {
+        "id": "EXT_NRCAN_Lambert_3978",
+        "default": {
+          "xmin": -2681457,
+          "ymin": -883440,
+          "xmax": 3549492,
+          "ymax": 3482193
+        },
+        "spatialReference": {
+          "wkid": 3978
+        }
+      }
+    ],
+    "tileSchemas": [ { "id": "nrcan3978", "name": "NRCan Maps", "lodSetId": "LOD_NRCAN_Lambert_3978", "extentSetId": "EXT_NRCAN_Lambert_3978" } ],
+    "baseMaps": [
+      {
+        "id": "baseNrCan",
+        "name": "Canada Base Map - Transportation (CBMT)",
+        "description": "The Canada Base Map - Transportation (CBMT) web mapping services of the Earth Sciences Sector at Natural Resources Canada, are intended primarily for online mapping application users and developers.",
+        "altText": "altText - The Canada Base Map - Transportation (CBMT)",
+        "thumbnailUrl": "assets/images/basemap/baseToponrcan.jpg",
+        "tileSchemaId": "nrcan3978",
+        "layers": [
+          {
+            "id": "CBMT",
+            "layerType": "esriFeature",
+            "url": "http://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer"
+          }
+        ]
       }
     ],
     "legend": {
