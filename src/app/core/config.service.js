@@ -37,16 +37,26 @@
         .module('app.core')
         .factory('configService', configService);
 
-    function configService($q, $rootElement, $timeout, $http, $translate, $mdToast) {
+    function configService($q, $rootScope, $rootElement, $timeout, $http, $translate, $mdToast, events) {
         let initializePromise;
         let isInitialized = false;
+
+        const DEFAULT_LANGS = ['en-CA', 'fr-CA'];
+
+        const States = {
+            NEW: 0,
+            LOADING: 1,
+            LOADED: 2,
+            UPDATING: 3
+        };
+
+        let loadingState = States.NEW;
 
         const service = {
             currentLang,
             getCurrent,
             getOriginal,
             initialize,
-            ready,
             rcsAddKeys,
             rcsUrl: '',
             setCurrent,
@@ -58,28 +68,67 @@
 
         const partials = {}; // partial config promises, one array per language entry
         const configFile = {};
+        const initialPromises = {}; // only the initial configurations (i.e. whatever comes in config attribute)
+        let remoteConfig = false;
         let languages;
 
         return service;
 
         /***************/
 
+        function configLoader(configAttr, langs) {
+            loadingState = States.LOADING;
+            try {
+                const config = JSON.parse(configAttr);
+                config.forEach(lang => initialPromises[lang] = $q.resolve(config[lang]));
+            } catch (e) {
+                if (window.hasOwnProperty(configAttr)) {
+                    const config = window[configAttr];
+                    config.forEach(lang => initialPromises[lang] = $q.resolve(config[lang]));
+                } else {
+                    remoteConfig = true;
+                    langs.forEach(lang => {
+                        initialPromises[lang] = $http.get(configAttr.replace('${lang}', lang)).then(r => r.data);
+                    });
+                }
+            }
+            originalConfigs[langs[0]] = initialPromises[langs[0]];
+            initialPromises[langs[0]].then(cfgData => {
+                loadingState = States.LOADED;
+                $rootScope.$broadcast(events.rvCfgInitialized);
+            });
+        }
+
         /**
          * Initializes `configService` by fetching and parsing `config` object.
          * @function initialize
          */
         function initialize() {
-            if (initializePromise) {
-                return initializePromise;
+            if (loadingState !== States.NEW) {
+                return;
             }
+
+            const langAttr = $rootElement.attr('rv-langs');
+            languages = DEFAULT_LANGS;
+            if (langAttr) {
+                try {
+                    languages = angular.fromJson(langAttr);
+                } catch (e) {
+                    console.warn(`Could not parse langs, defaulting to ${DEFAULT_LANGS}`);
+                    // TODO: better way to handle when no languages are specified?
+                }
+            }
+
+            const configAttr = $rootElement.attr('rv-config');
+            $translate.use(languages[0]);
+            configLoader(configAttr, languages);
+            return;
+
 
             // store the promise and return it on all future calls; this way initialize can be called one time only
             initializePromise = $q((fulfill, reject) => {
-                const configAttr = $rootElement.attr('rv-config');
-                const langAttr = $rootElement.attr('rv-langs');
                 const svcAttr = $rootElement.attr('rv-service-endpoint');
                 const keysAttr = $rootElement.attr('rv-keys');
-                let langs;
 
                 // This function can only be called once.
                 if (isInitialized) {
@@ -88,24 +137,8 @@
 
                 // check if config attribute exist
                 if (configAttr) {
-                    if (langAttr) {
-                        try {
-                            langs = angular.fromJson(langAttr);
-                        } catch (e) {
-                            console.warn('Could not parse langs, defaulting to en-CA and fr-CA');
-
-                            // TODO: better way to handle when no languages are specified?
-                            langs = ['en-CA', 'fr-CA'];
-                        }
-                    } else {
-                        langs = ['en-CA', 'fr-CA'];
-                    }
-
-                    // set available languages
-                    languages = langs;
 
                     // set the language right away and not wait the initialization to be fullfilled
-                    $translate.use(langs[0]);
 
                     langs.forEach(lang => partials[lang] = []);
 
@@ -157,22 +190,6 @@
             });
 
             return initializePromise;
-        }
-
-        /**
-         * Config initialization block for file-based configs
-         * @function fileInit
-         * @param {string}  configAttr  the file path tied to the config attribute
-         * @param {array}   langs       array of languages which have configs
-         */
-        function fileInit(configAttr, langs) {
-            langs.forEach(lang => {
-                // try to load config file
-                const p = $http.get(configAttr.replace('${lang}', lang))
-                    .then(xhr => xhr.data);
-                partials[lang].push(p);
-                configFile[lang] = p;
-            });
         }
 
         /**
@@ -382,21 +399,5 @@
             return results;
         }
 
-        /**
-         * Checks if the service is ready to use.
-         * @function ready
-         * @param  {Promise|Array} nextPromises optional promises to be resolved before returning
-         * @return {Promise}              promise to be resolved on config service initialization
-         */
-        function ready(nextPromises) {
-            return initializePromise
-                .then(() => {
-                    console.log('Ready promise resolved.');
-                    return $q.all(nextPromises);
-                })
-                .catch(() => {
-                    console.log('"ready" function failed');
-                });
-        }
     }
 })();
