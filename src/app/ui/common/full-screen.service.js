@@ -162,9 +162,9 @@
          * @function onComplete
          */
         function onComplete() {
-            const mapManager = gapiService.gapi.mapManager;
-            const originalPanDuration = mapManager.mapDefault('panDuration');
-            mapManager.mapDefault('panDuration', 0);
+            const map = gapiService.gapi.Map;
+            const originalPanDuration = map.mapDefault('panDuration');
+            map.mapDefault('panDuration', 0);
 
             geoService.mapObject.resize();
             geoService.mapObject.reposition();
@@ -180,7 +180,7 @@
                     clearProps: 'top,left'
                 });
 
-                mapManager.mapDefault('panDuration', originalPanDuration);
+                map.mapDefault('panDuration', originalPanDuration);
             }, RV_DURATION * 1000);
         }
     }
