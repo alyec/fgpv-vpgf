@@ -25,7 +25,7 @@
         return directive;
     }
 
-    function Controller(geoService, mapService, basemapService, configService) {
+    function Controller(geoService, basemapService, configService) {
         'ngInject';
         const self = this;
 
@@ -33,7 +33,12 @@
             (self.map = config.map));
 
         self.geoService = geoService;
-        self.mapService = mapService;
+
+        self.selectBasemap = basemap => {
+            configService.getSync.map.selectedBasemap.deselect();
+            basemap.select();
+            geoService.map.selectBasemap(basemap.id);
+        }
 
         self.close = basemapService.close;
     }
